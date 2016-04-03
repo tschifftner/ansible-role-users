@@ -39,7 +39,7 @@
       - name: travis_normal
         state: present
         group: travis_normal
-        groups: travis_group
+        groups: ['travis_group']
 
   roles:
     - ansible-role-users
