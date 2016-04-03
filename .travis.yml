@@ -119,10 +119,10 @@ script:
   - sudo egrep -i 'key2' /home/travis_admin2/.ssh/authorized_keys
 
   # Ensure ssh is removed from removed users
-  - egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
-  - egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
-  - egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
-  - egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
+  - sudo egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
+  - sudo egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
+  - sudo egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
+  - sudo egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
 
   # sshd_config
   - grep 'PasswordAuthentication no' /etc/ssh/sshd_config
