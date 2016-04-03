@@ -3,6 +3,7 @@
   remote_user: root
 
   vars:
+    users_debug: true
     users_ssh_config:
       - regexp: "^PasswordAuthentication"
         line: "PasswordAuthentication no"

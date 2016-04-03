@@ -6,7 +6,7 @@
     line: "{{ item.line }}"
     state: present
     validate: '/usr/sbin/sshd -T -f %s'
-  with_items: users_ssh_config
+  with_items: '{{ users_ssh_config }}'
   notify: restart ssh
 
 - name: Configure SSH (blocks)
@@ -17,14 +17,14 @@
     marker: '{{ item.marker | default(omit) }}'
     content: '{{ item.content }}'
   when: item.content is defined and item.content != ''
-  with_items: users_ssh_config_blocks
+  with_items: '{{ users_ssh_config_blocks }}'
 
 - name: Configure ~/.ssh/authorized_keys for users
   authorized_key:
     key: '{{ item.sshkeys | join("\n") }}'
     state: 'present'
     user: '{{ item.name }}'
-  no_log: true
+  no_log: users_debug == false
   with_items: "{{ users_admin + users_normal }}"
   when: ((item.name is defined and item.name and item.name != 'root') and
          (item.state is undefined or (item.state is defined and item.state != 'absent')) and

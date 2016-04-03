@@ -3,31 +3,31 @@
   group:
     name: "{{ users_admin_group }}"
     state: present
-  no_log: true
+  no_log: users_debug == false
   when: users_admin_group is defined and users_admin_group
 
 - name: Creating groups
   group:
     name: "{{ item }}"
     state: present
-  with_items: users_groups_to_create
+  with_items: '{{ users_groups_to_create }}'
 
 - name: Removing groups
   group:
     name: "{{ item }}"
     state: absent
-  with_items: users_remove_groups
+  with_items: '{{ users_remove_groups }}'
 
 - name: Per user group creation
   group:
     name: "{{ item.name }}"
     gid: "{{ item.uid | default(omit) }}"
     state: present
-  no_log: true
+  no_log: users_debug == false
   when: (users_create_per_user_group and
         (item.name is defined and item.name and item.name != 'root') and
         (item.state is undefined or (item.state is defined and item.state != 'absent')))
   with_flattened:
-    - users_system
-    - users_admin
-    - users_normal
+    - '{{ users_system }}'
+    - '{{ users_admin }}'
+    - '{{ users_normal }}'
