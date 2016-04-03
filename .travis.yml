@@ -101,8 +101,14 @@ script:
   - id -u travis_normal
 
   # Check removed users
-  - id -u dummy1 && (echo 'User is removed: fail' && exit 1) || (echo 'User is removed: pass' && exit 0)
-  - id -u dummy2 && (echo 'User is removed: fail' && exit 1) || (echo 'User is removed: pass' && exit 0)
+  - >
+    id -u dummy1
+    && (echo "User is removed: fail" && exit 1)
+    || (echo 'User is removed: pass' && exit 0)
+  - >
+    id -u dummy2
+    && (echo 'User is removed: fail' && exit 1)
+    || (echo 'User is removed: pass' && exit 0)
 
   # sudo
   - sudo test -e /etc/sudoers.d/10-ansible-managed
