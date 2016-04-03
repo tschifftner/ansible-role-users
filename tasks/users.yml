@@ -67,12 +67,24 @@
         (item.name not in users_remove))
   with_items: '{{ users_normal }}'
 
-- name: Ensure marked for deletion users are removed (ignore when user is still in use by process)
+
+- name: Remove state=absent users
   user:
     name: "{{ item.name }}"
     state: 'absent'
+    password: "{{ (item.name + ansible_machine_id) | hash('sha1') }}"
+    update_password: 'always'
+    group: 'nogroup'
+    groups: []
+    shell: /bin/nologin
+    force: true
+    append: no
+    expires: 1
+    remove: true
+    comment: 'disabled'
   no_log: users_debug == false
   ignore_errors: true
+  changed_when: false
   when: (item.name is defined and item.name != 'root' and
         (item.state is defined and item.state == 'absent'))
   with_flattened:
@@ -82,8 +94,18 @@
 
 - name: Ensure deleted users in users_remove are removed
   user:
-    name: "{{ item.name }}"
+    name: "{{ item }}"
     state: 'absent'
+    password: "{{ (item.name + ansible_machine_id) | hash('sha1') }}"
+    update_password: 'always'
+    group: 'nogroup'
+    groups: []
+    shell: /bin/nologin
+    force: true
+    append: no
+    expires: 1
+    remove: true
+    comment: 'disabled'
   no_log: users_debug == false
   ignore_errors: true
   when: item != 'root'
