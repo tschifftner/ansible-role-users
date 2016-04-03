@@ -1,0 +1,24 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Tobias Schifftner
+  description: Manage users, ssh-keys and sudo on Debian/Ubuntu linux servers.
+  company: ambimax® GmbH
+  license: MIT
+  min_ansible_version: 1.8
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+  - name: Ubuntu
+    versions:
+    - precise
+    - trusty
+  galaxy_tags:
+    - ubuntu
+    - debian
+    - users
+    - sudo
+    - ssh
+    - ssh-key
