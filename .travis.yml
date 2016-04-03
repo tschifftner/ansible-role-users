@@ -100,18 +100,18 @@ script:
   - egrep -v -i "^dummy2" /etc/passwd
 
   # sudo
-  - test -e /etc/sudoers.d/10-ansible-managed
-  - grep travis_admin /etc/sudoers.d/10-ansible-managed
+  - sudo test -e /etc/sudoers.d/10-ansible-managed
+  - sudo grep travis_admin /etc/sudoers.d/10-ansible-managed
 
   # ssh
-  - grep ACp8zMzDxBhbEWCUUF /home/travis_admin2/.ssh/authorized_keys
-  - grep QjzmCtJahyapXoe2w5 /home/travis_admin2/.ssh/authorized_keys
+  - sudo grep ACp8zMzDxBhbEWCUUF /home/travis_admin2/.ssh/authorized_keys
+  - sudo grep QjzmCtJahyapXoe2w5 /home/travis_admin2/.ssh/authorized_keys
 
   # Ensure ssh is removed from revomved users
 #  - test -e /home/dummy1/.ssh/authorized_keys && (echo 'File removed: fail' && exit 1) || (echo 'File removed: pass' && exit 0)
 #  - test -e /home/dummy2/.ssh/authorized_keys && (echo 'File removed: fail' && exit 1) || (echo 'File removed: pass' && exit 0)
-  - grep -v ACp8zMzDxBhbEWCUUF /home/dummy1/.ssh/authorized_keys
-  - grep -v QjzmCtJahyapXoe2w5 /home/dummy1/.ssh/authorized_keys
+  - sudo grep -v ACp8zMzDxBhbEWCUUF /home/dummy1/.ssh/authorized_keys
+  - sudo grep -v QjzmCtJahyapXoe2w5 /home/dummy1/.ssh/authorized_keys
 
   # sshd_config
   - grep 'PasswordAuthentication no' /etc/ssh/sshd_config

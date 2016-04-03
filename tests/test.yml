@@ -4,6 +4,7 @@
 
   vars:
     users_debug: true
+    users_ssh_port: '2828'
     users_ssh_config:
       - regexp: "^PasswordAuthentication"
         line: "PasswordAuthentication no"
@@ -12,7 +13,7 @@
       - regexp: "^Port"
         line: "Port 2828"
 
-    users_groups_to_create: ['usergroup1', 'usergroup2']
+    users_groups_to_create: ['usergroup1', 'usergroup2', 'travis_group']
     users_remove: ['dummy1', 'dummy2']
     users_remove_groups: ['dummy_group1']
     users_manage_admin_sudoers: true
