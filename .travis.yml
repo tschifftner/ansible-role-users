@@ -45,7 +45,23 @@ install:
 
 script:
   # Check the role/playbook's syntax.
+  - ansible-playbook -i tests/inventory tests/prepare.yml --syntax-check
   - ansible-playbook -i tests/inventory tests/$SITE --syntax-check
+
+  # Prepare system for testing
+  - ansible-playbook -i tests/inventory tests/prepare.yml --connection=local --sudo
+
+  # Test preparations
+  - id -u dummy1
+  - id -u dummy2
+  - id -u dummy3
+  - egrep -i "^dummy_group" /etc/group
+  - egrep -i "^dummy_group1" /etc/group
+  - egrep -i "^dummy_group2" /etc/group
+  - egrep -i "^dummy_group3" /etc/group
+  - test -e /home/dummy1/.ssh/authorized_keys
+  - test -e /home/dummy2/.ssh/authorized_keys
+  - test -e /home/dummy3/.ssh/authorized_keys
 
   # Run the role/playbook with ansible-playbook.
   - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
@@ -61,19 +77,27 @@ script:
   - ansible-lint tests/$SITE
 
   # Check groups
-  - grep travis_admin /etc/group
-  - grep travis_group /etc/group
-  - grep travis_normal /etc/group
-  - grep usergroup1 /etc/group
-  - grep usergroup2 /etc/group
+  - groups travis_admin | grep travis_admin
+  - groups travis_admin | grep travis_group
+  - groups travis_admin2 | grep travis_admin
+  - groups travis_admin2 | grep travis_group
+  - groups travis_normal | grep travis_normal
+  - groups travis_normal | grep travis_group
+
+  - egrep -i "^usergroup1" /etc/group
+  - egrep -i "^usergroup2" /etc/group
+
+  # Check removed groups
+  - egrep -v -i "^dummy_group1" /etc/group
 
   # Check users
-  - grep travis_admin /etc/passwd
-  - grep travis_normal /etc/passwd
+  - id -u travis_admin
+  - id -u travis_admin2
+  - id -u travis_normal
 
   # Check removed users
-  - grep -v dummy1 /etc/passwd
-  - grep -v dummy2 /etc/passwd
+  - egrep -v -i "^dummy1" /etc/passwd
+  - egrep -v -i "^dummy2" /etc/passwd
 
   # sudo
   - test -e /etc/sudoers.d/10-ansible-managed
@@ -98,11 +122,11 @@ script:
 after_failure:
   # run playbook again to see idempotence failures
   - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo -vvv
-  - cat /etc/passwd
-  - cat /etc/group
-  - cat /etc/sudoers.d/10-ansible-managed
-  - cat /etc/ssh/sshd_config
-  - cat /home/dummy1/.ssh/authorized_keys
+  - sudo cat /etc/passwd
+  - sudo cat /etc/group
+  - sudo cat /etc/sudoers.d/10-ansible-managed
+  - sudo cat /etc/ssh/sshd_config
+  - sudo cat /home/dummy1/.ssh/authorized_keys
   - sudo tail -n150 /var/log/syslog
   - ansible --version
 
