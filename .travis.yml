@@ -55,13 +55,13 @@ script:
   - id -u dummy1
   - id -u dummy2
   - id -u dummy3
-  - egrep -i "^dummy_group" /etc/group
-  - egrep -i "^dummy_group1" /etc/group
-  - egrep -i "^dummy_group2" /etc/group
-  - egrep -i "^dummy_group3" /etc/group
-  - test -e /home/dummy1/.ssh/authorized_keys
-  - test -e /home/dummy2/.ssh/authorized_keys
-  - test -e /home/dummy3/.ssh/authorized_keys
+  - egrep -q -i "^dummy_group" /etc/group
+  - egrep -q -i "^dummy_group1" /etc/group
+  - egrep -q -i "^dummy_group2" /etc/group
+  - egrep -q -i "^dummy_group3" /etc/group
+  - sudo test -e /home/dummy1/.ssh/authorized_keys
+  - sudo test -e /home/dummy2/.ssh/authorized_keys
+  - sudo test -e /home/dummy3/.ssh/authorized_keys
 
   # Run the role/playbook with ansible-playbook.
   - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
@@ -84,11 +84,11 @@ script:
   - groups travis_normal | grep travis_normal
   - groups travis_normal | grep travis_group
 
-  - egrep -i "^usergroup1" /etc/group
-  - egrep -i "^usergroup2" /etc/group
+  - egrep -q -i "^usergroup1" /etc/group
+  - egrep -q -i "^usergroup2" /etc/group
 
   # Check removed groups
-  - egrep -v -i "^dummy_group1" /etc/group
+  - egrep -q -v -i "^dummy_group1" /etc/group
 
   # Check users
   - id -u travis_admin
@@ -96,8 +96,8 @@ script:
   - id -u travis_normal
 
   # Check removed users
-  - egrep -v -i "^dummy1" /etc/passwd
-  - egrep -v -i "^dummy2" /etc/passwd
+  - egrep -q -v -i "^dummy1" /etc/passwd
+  - egrep -q -v -i "^dummy2" /etc/passwd
 
   # sudo
   - sudo test -e /etc/sudoers.d/10-ansible-managed
