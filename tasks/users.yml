@@ -96,14 +96,14 @@
   user:
     name: "{{ item }}"
     state: 'absent'
-    password: "{{ (item.name + ansible_machine_id) | hash('sha1') }}"
+    password: "{{ (item + ansible_machine_id) | hash('sha1') }}"
     update_password: 'always'
     group: 'nogroup'
     groups: []
     shell: /bin/nologin
     force: true
     append: no
-    expires: 1
+    expires: 1422403387
     remove: true
     comment: 'disabled'
   no_log: users_debug == false

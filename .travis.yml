@@ -93,7 +93,7 @@ script:
   - egrep -q -i "^usergroup2" /etc/group
 
   # Check removed groups
-  - egrep -q -v -i "^dummy_group1" /etc/group
+  - egrep -i "^dummy_group1" /etc/group | wc -l | grep 0
 
   # Check users
   - id -u travis_admin
@@ -101,8 +101,8 @@ script:
   - id -u travis_normal
 
   # Check removed users
-  - egrep -q -v -i "^dummy1" /etc/passwd
-  - egrep -q -v -i "^dummy2" /etc/passwd
+  - id -u dummy1 && (echo 'User is removed: fail' && exit 1) || (echo 'User is removed: pass' && exit 0)
+  - id -u dummy2 && (echo 'User is removed: fail' && exit 1) || (echo 'User is removed: pass' && exit 0)
 
   # sudo
   - sudo test -e /etc/sudoers.d/10-ansible-managed
@@ -113,10 +113,10 @@ script:
   - sudo egrep -i 'key2' /home/travis_admin2/.ssh/authorized_keys
 
   # Ensure ssh is removed from removed users
-  - sudo egrep -v -i 'key1' /home/dummy1/.ssh/authorized_keys
-  - sudo egrep -v -i 'key2' /home/dummy1/.ssh/authorized_keys
-  - sudo egrep -v -i 'key1' /home/dummy2/.ssh/authorized_keys
-  - sudo egrep -v -i 'key2' /home/dummy2/.ssh/authorized_keys
+  - egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
+  - egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
+  - egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
+  - egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
 
   # sshd_config
   - grep 'PasswordAuthentication no' /etc/ssh/sshd_config
