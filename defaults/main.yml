@@ -1,0 +1,61 @@
+---
+# Groups
+users_groups_to_create: []
+users_create_per_user_group: true
+
+# List of usernames to remove, i.e. ['nginx','pureftpd']
+users_remove: []
+
+users_admin_group: "admin"
+users_ssh_password_authentication: 'yes'
+users_ssh_permit_root_login: 'yes'
+users_ssh_port: '22'
+
+# Administrators
+users_admin: []
+
+# Normal users
+users_normal: []
+
+# List of default groups added to new accounts
+users_default_groups: []
+
+# Should default groups be added to existing groups, or replace existing groups?
+users_default_groups_append: 'yes'
+
+# Allow to manage sudo permissions
+users_manage_admin_sudoers: true
+
+# If false, admins do not require tty
+users_admin_requiretty: false
+
+# Admins require password to enter sudo
+users_admin_require_sudo_password: true
+
+# Default settings for sudo
+sudo_defaults: []
+
+# Set a random very secure password for root
+users_set_random_root_password: false
+
+users_ssh_config_path: /etc/ssh/sshd_config
+
+users_ssh_config:
+  - regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication {{ users_ssh_password_authentication }}"
+  - regexp: "^PermitRootLogin"
+    line: "PermitRootLogin {{ users_ssh_permit_root_login }}"
+  - regexp: "^Port"
+    line: "Port {{ users_ssh_port }}"
+
+users_ssh_config_blocks: []
+#  - name: 'sftp'
+#    marker: "### {mark} ANSIBLE MANAGED BLOCK ###"
+#    content: |
+#      Match Group sftp
+#        ChrootDirectory %h
+#        ForceCommand internal-sftp
+#        PermitTunnel no
+#        AllowAgentForwarding no
+#        AllowTcpForwarding no
+#        X11Forwarding no

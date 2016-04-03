@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+{% for item in users_admin %}
+{{ item.name }} {{ item.hosts | default('ALL') }}={{ "(" ~ item.users | default('ALL') ~ ")" }} {{ "NOPASSWD:" if item.nopasswd | default(false) else "" }} {{ item.commands | default('ALL') }}
+{% endfor %}
+
+{% if users_admin_requiretty == false %}
+Defaults:{{ users_admin_group }} !requiretty
+{% endif %}
+%{{ users_admin_group }} ALL = (ALL) {{ 'NOPASSWD:' if not users_admin_require_sudo_password else '' }} ALL

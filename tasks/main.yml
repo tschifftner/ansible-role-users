@@ -1,0 +1,22 @@
+---
+
+- name: Manage user groups
+  include: groups.yml
+  tags: ['users-groups']
+
+- name: Manage users
+  include: users.yml
+  tags: ['users-users']
+
+- name: Manage sudo users and settings
+  include: sudo.yml
+  when: (users_admin|length and users_manage_admin_sudoers == true)
+  tags: ['users-sudo']
+
+- name: Secure ssh and manage keys
+  include: ssh.yml
+  tags: ['users-ssh']
+
+#- name: Include custom dotfiles
+#  include: dotfiles.yml
+#  tags: ['users-dotfiles']

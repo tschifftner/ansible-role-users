@@ -1,0 +1,42 @@
+---
+- name: Configure SSH (lines)
+  lineinfile:
+    dest: "{{ users_ssh_config_path }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    validate: '/usr/sbin/sshd -T -f %s'
+  with_items: users_ssh_config
+  notify: restart ssh
+
+- name: Configure SSH (blocks)
+  notify: restart ssh
+  blockinfile:
+    dest: /etc/ssh/sshd_config
+    validate: '/usr/sbin/sshd -T -f %s'
+    marker: '{{ item.marker | default(omit) }}'
+    content: '{{ item.content }}'
+  when: item.content is defined and item.content != ''
+  with_items: users_ssh_config_blocks
+
+- name: Configure ~/.ssh/authorized_keys for users
+  authorized_key:
+    key: '{{ item.sshkeys | join("\n") }}'
+    state: 'present'
+    user: '{{ item.name }}'
+  no_log: true
+  with_items: "{{ users_admin + users_normal }}"
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
+         (item.createhome is undefined or item.createhome) and
+         (item.sshkeys is defined and item.sshkeys))
+
+#- name: Remove ~/.ssh/authorized_keys from user account if disabled
+#  file:
+#    path: '~/.ssh/authorized_keys'
+#    state: 'absent'
+#  with_items: users_admin + users_normal
+#  when: ((item.name is defined and item.name and item.name != 'root') and
+#         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
+#         (item.createhome is undefined or item.createhome) and
+#         (item.sshkeys is defined and not item.sshkeys))

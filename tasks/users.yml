@@ -1,0 +1,103 @@
+---
+- debug: var=users_system
+
+- name: Ensure parent home directories exist
+  file:
+    path: "{{ (item.home | default('/home/'+item.name)) | dirname }}"
+    state: directory
+  when: (item.name is defined and item.name != 'root' and
+        (item.state is not defined or item.state != 'absent') and
+        (item.name not in users_remove))
+  with_items: '{{ users_system + users_admin + users_normal }}'
+
+
+- name: Ensuer system users exist
+  user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    group: "{{ item.group | default(item.name) }}"
+    groups: "{{ item.groups | join(',') if item.groups is defined else omit }}"
+    state: present
+    system: yes
+  no_log: true
+  when: (item.name is defined and item.name != 'root' and
+        (item.state is not defined or item.state != 'absent') and
+        (item.name not in users_remove))
+  with_items: users_system
+
+- name: Ensure admin users exist
+  user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    group: "{{ item.group | default(item.name) }}"
+    groups: "{{ item.groups | join(',') if item.groups is defined else omit }}"
+    state: 'present'
+    system: no
+    password: "{{ item.password | default(omit) }}"
+    update_password: "{{ item.update_password | default('on_create') }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    home: "{{ item.home | default('/home/'+item.name) }}"
+    createhome: "{{ item.createhome | default('yes') }}"
+    expires: "{{ item.expires | default(omit) }}"
+  no_log: true
+  changed_when: item.update_password is defined and item.update_password != 'always'
+  when: (item.name is defined and item.name != 'root' and
+        (item.state is not defined or item.state != 'absent') and
+        (item.name not in users_remove))
+  with_items: users_admin
+
+- name: Ensure normal users exist
+  user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    group: "{{ item.group | default(item.name) }}"
+    groups: "{{ item.groups | join(',') if item.groups is defined else omit }}"
+    state: 'present'
+    system: no
+    password: "{{ item.password | default(omit) }}"
+    update_password: "{{ item.update_password | default('on_create') }}"
+    shell: "{{ item.shell | default('/bin/sh') }}"
+    home: "{{ item.home | default('/home/'+item.name) }}"
+    createhome: "{{ item.createhome | default('yes') }}"
+    expires: "{{ item.expires | default(omit) }}"
+  #no_log: true
+  changed_when: item.update_password is defined and item.update_password != 'always'
+  when: (item.name is defined and item.name != 'root' and
+        (item.state is not defined or item.state != 'absent') and
+        (item.name not in users_remove))
+  with_items: users_normal
+
+- name: Ensure marked for deletion users are removed (ignore when user is still in use by process)
+  user:
+    name: "{{ item.name }}"
+    state: 'absent'
+  no_log: true
+  ignore_errors: true
+  when: (item.name is defined and item.name != 'root' and
+        (item.state is defined and item.state == 'absent'))
+  with_flattened:
+    - users_system
+    - users_admin
+    - users_normal
+
+- name: Ensure deleted users in users_remove are removed
+  user:
+    name: "{{ item.name }}"
+    state: 'absent'
+  no_log: true
+  ignore_errors: true
+  when: item != 'root'
+  with_items: users_remove
+
+- name: Set mode on home directories
+  file:
+    path: "{{ item.home | default('/home/'+item.name) }}"
+    mode: '{{ item.mode }}'
+    owner: root
+    group: root
+  no_log: true
+  when: ((item.mode is defined and item.home is defined) and
+        (item.name is defined and item.name != 'root') and
+        (item.state is not defined or item.state != 'absent') and
+        (item.name not in users_remove))
+  with_items: users_normal

@@ -1,0 +1,16 @@
+---
+
+- name: Ensure sudo is installed
+  apt:
+    name: sudo
+    state: present
+
+- name: Admin sudoers
+  template:
+    src: 'sudo'
+    dest: '/etc/sudoers.d/10-ansible-managed'
+    owner: 'root'
+    group: 'root'
+    mode: '0440'
+  no_log: true
+  with_items: users_admin
