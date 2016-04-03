@@ -65,6 +65,8 @@ script:
   - sudo test -e /home/dummy1/.ssh/authorized_keys
   - sudo test -e /home/dummy2/.ssh/authorized_keys
   - sudo test -e /home/dummy3/.ssh/authorized_keys
+  - sudo egrep -i 'key1' /home/dummy1/.ssh/authorized_keys
+  - sudo egrep -i 'key2' /home/dummy1/.ssh/authorized_keys
 
   # Run the role/playbook with ansible-playbook.
   - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
@@ -107,16 +109,14 @@ script:
   - sudo grep travis_admin /etc/sudoers.d/10-ansible-managed
 
   # ssh
-  - sudo egrep -i 'IhUs7j3E9ivZg9yUFkck6QSEu3bUMko+q6gtSDcdkoACp8zMzDxBhbEWCUUF' /home/travis_admin2/.ssh/authorized_keys
-  - sudo egrep -i '/sczyeR8VIeiORbbVu1+rdnA/l1eHdd8OvX+MymDWdQjzmCtJahyapXoe2w5' /home/travis_admin2/.ssh/authorized_keys
+  - sudo egrep -i 'key1' /home/travis_admin2/.ssh/authorized_keys
+  - sudo egrep -i 'key2' /home/travis_admin2/.ssh/authorized_keys
 
   # Ensure ssh is removed from removed users
-#  - test -e /home/dummy1/.ssh/authorized_keys && (echo 'File removed: fail' && exit 1) || (echo 'File removed: pass' && exit 0)
-#  - test -e /home/dummy2/.ssh/authorized_keys && (echo 'File removed: fail' && exit 1) || (echo 'File removed: pass' && exit 0)
-  - sudo egrep -v -i 'IhUs7j3E9ivZg9yUFkck6QSEu3bUMko+q6gtSDcdkoACp8zMzDxBhbEWCUUF' /home/dummy1/.ssh/authorized_keys
-  - sudo egrep -v -i '/sczyeR8VIeiORbbVu1+rdnA/l1eHdd8OvX+MymDWdQjzmCtJahyapXoe2w5' /home/dummy1/.ssh/authorized_keys
-  - sudo egrep -v -i 'IhUs7j3E9ivZg9yUFkck6QSEu3bUMko+q6gtSDcdkoACp8zMzDxBhbEWCUUF' /home/dummy2/.ssh/authorized_keys
-  - sudo egrep -v -i '/sczyeR8VIeiORbbVu1+rdnA/l1eHdd8OvX+MymDWdQjzmCtJahyapXoe2w5' /home/dummy2/.ssh/authorized_keys
+  - sudo egrep -v -i 'key1' /home/dummy1/.ssh/authorized_keys
+  - sudo egrep -v -i 'key2' /home/dummy1/.ssh/authorized_keys
+  - sudo egrep -v -i 'key1' /home/dummy2/.ssh/authorized_keys
+  - sudo egrep -v -i 'key2' /home/dummy2/.ssh/authorized_keys
 
   # sshd_config
   - grep 'PasswordAuthentication no' /etc/ssh/sshd_config

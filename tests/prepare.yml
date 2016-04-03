@@ -6,6 +6,7 @@
     php5_fpm_pools:
       - name: 'dummy1'
         user: 'dummy1'
+        group: 'dummy_group1'
         prefix: '/home/dummy1/current'
         tmp_path: '/home/dummy1/tmp'
         sessions_path: '/home/dummy1/sessions'
@@ -45,8 +46,8 @@
     - name: Create ssh for dummy users
       authorized_key:
         key: |
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXEDyKrAGkriGSTqPS081PpzfVo7M8G3DAhlYau9P4YK0BIdwCd6Yh82jcpQVxtAOahAfSVU2yhanyNgj2iYqG6TWeoE/Vth4sCWy8C5iqogC9WHZgvugGY+cIoXTdwt3GckLo0rRobKuET8zgHXb1LSltYV837biE2c4tf0FFO/4ABR7s9zWIuhVljTeiKMYHCXSTEZ9LayFUMeKnVwdr7tpEM1f+Os0rt5la34axZxFlJPCFEy9fVRz9Whu4+XEoG6m/xDEDJC3YKJSH2doa03F+IhUs7j3E9ivZg9yUFkck6QSEu3bUMko+q6gtSDcdkoACp8zMzDxBhbEWCUUF test@travis
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDV4eVobBD6q/0J9OPnAZ3pot/rdVtEoafTSyMTRwoVRbsUvRLvgW7EvCgL2jtwQ9iFSDceJaWg+ZuEr1Guv3h7fL3Y2s4ccTKR3fr+DMrJTxHHjmJ/mZml1u1mHRuWPA3Ncvy+xAFsKO5vLISnHokIDvA4+3BE/HOFLqgwrlhBbeNrr3h4/K0RGXCpNV0lrEdTM8qHxo15Da+RGGRmVgmZQTxGMT66ByAQ9C4eXEikBhEmI7gSE/e9cFd/zHzp2KBWRthPj1H0EHCLBFC3qbHorPlB/sczyeR8VIeiORbbVu1+rdnA/l1eHdd8OvX+MymDWdQjzmCtJahyapXoe2w5 test@travis
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXEDyKrAGkriGSTqPS081PpzfVo7M8G3DAhlYau9P4YK0BIdwCd6Yh82jcpQVxtAOahAfSVU2yhanyNgj2iYqG6TWeoE/Vth4sCWy8C5iqogC9WHZgvugGY+cIoXTdwt3GckLo0rRobKuET8zgHXb1LSltYV837biE2c4tf0FFO/4ABR7s9zWIuhVljTeiKMYHCXSTEZ9LayFUMeKnVwdr7tpEM1f+Os0rt5la34axZxFlJPCFEy9fVRz9Whu4+XEoG6m/xDEDJC3YKJSH2doa03F+IhUs7j3E9ivZg9yUFkck6QSEu3bUMko+q6gtSDcdkoACp8zMzDxBhbEWCUUF key1@travis
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDV4eVobBD6q/0J9OPnAZ3pot/rdVtEoafTSyMTRwoVRbsUvRLvgW7EvCgL2jtwQ9iFSDceJaWg+ZuEr1Guv3h7fL3Y2s4ccTKR3fr+DMrJTxHHjmJ/mZml1u1mHRuWPA3Ncvy+xAFsKO5vLISnHokIDvA4+3BE/HOFLqgwrlhBbeNrr3h4/K0RGXCpNV0lrEdTM8qHxo15Da+RGGRmVgmZQTxGMT66ByAQ9C4eXEikBhEmI7gSE/e9cFd/zHzp2KBWRthPj1H0EHCLBFC3qbHorPlB/sczyeR8VIeiORbbVu1+rdnA/l1eHdd8OvX+MymDWdQjzmCtJahyapXoe2w5 key2@travis
         state: 'present'
         user: '{{ item }}'
       with_items:
