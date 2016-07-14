@@ -1,5 +1,7 @@
 ---
-- debug: var=users_system
+- name: Output users_system variable
+  debug:
+    var: '{{ users_system }}'
 
 - name: Ensure parent home directories exist
   file:
