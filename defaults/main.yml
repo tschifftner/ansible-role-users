@@ -5,6 +5,7 @@ users_create_per_user_group: true
 
 # List of usernames to remove, i.e. ['nginx','pureftpd']
 users_remove: []
+users_remove_groups: []
 
 users_admin_group: "admin"
 users_ssh_password_authentication: 'yes'
