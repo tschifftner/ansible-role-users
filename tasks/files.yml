@@ -1,0 +1,22 @@
+---
+
+#- name: 'Set facts'
+#  set_fact:
+#    _user_files: '{{ _user_files + item | default([]) }}'
+#  when: item.files is defined
+#  with_items: '{{ users_system + users_admin + users_normal }}'
+#
+#- debug: msg="{{ user_files }}"
+
+- name: Save files for users
+  copy:
+    dest: '{{ item.1.dest }}'
+    content: '{{ item.1.content }}'
+    owner: '{{ item.1.owner | default(omit) }}'
+    group: '{{ item.1.group | default(omit) }}'
+    mode: '{{ item.1.mode | default(omit) }}'
+  become_user: '{{ item.0.name }}'
+  with_subelements:
+    #- '{{ users_system + users_admin + users_normal }}'
+    - "{{ (users_system + users_admin + users_normal) | selectattr('files', 'defined') | list }}"
+    - 'files'

@@ -17,6 +17,10 @@
   include: ssh.yml
   tags: ['users-ssh']
 
+- name: Manage user files
+  include: files.yml
+  tags: ['users-files']
+
 #- name: Include custom dotfiles
 #  include: dotfiles.yml
 #  tags: ['users-dotfiles']
