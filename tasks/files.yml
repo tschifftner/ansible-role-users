@@ -1,12 +1,13 @@
 ---
 
-#- name: 'Set facts'
-#  set_fact:
-#    _user_files: '{{ _user_files + item | default([]) }}'
-#  when: item.files is defined
-#  with_items: '{{ users_system + users_admin + users_normal }}'
-#
-#- debug: msg="{{ user_files }}"
+- name: Ensure parent directories exist
+  file:
+    path: "{{ item.1.dest | dirname }}"
+    state: directory
+  become_user: '{{ item.0.name }}'
+  with_subelements:
+    - "{{ (users_system + users_admin + users_normal) | selectattr('files', 'defined') | list }}"
+    - 'files'
 
 - name: Save files for users
   copy:
@@ -17,6 +18,5 @@
     mode: '{{ item.1.mode | default(omit) }}'
   become_user: '{{ item.0.name }}'
   with_subelements:
-    #- '{{ users_system + users_admin + users_normal }}'
     - "{{ (users_system + users_admin + users_normal) | selectattr('files', 'defined') | list }}"
     - 'files'
