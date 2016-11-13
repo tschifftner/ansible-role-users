@@ -49,11 +49,11 @@ script:
   - sudo egrep -i 'key2' /home/dummy1/.ssh/authorized_keys
 
   # Run the role/playbook with ansible-playbook.
-  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
+  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
 
   # Run the role/playbook again, checking to make sure it's idempotent.
   - >
-    ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
+    ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
@@ -112,7 +112,7 @@ script:
 
 after_failure:
   # run playbook again to see idempotence failures
-  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo -vvv
+  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --become -vvv
   - sudo cat /etc/passwd
   - sudo cat /etc/group
   - sudo cat /etc/sudoers.d/10-ansible-managed
