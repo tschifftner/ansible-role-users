@@ -32,7 +32,7 @@ script:
   - ansible-playbook -i tests/inventory tests/$SITE --syntax-check
 
   # Prepare system for testing
-  - ansible-playbook -i tests/inventory tests/prepare.yml --connection=local --sudo
+  - ansible-playbook -i tests/inventory tests/prepare.yml --connection=local --become
 
   # Test preparations
   - id -u dummy1
