@@ -4,6 +4,7 @@
   file:
     path: "{{ item.1.dest | dirname }}"
     state: directory
+  become: true
   become_user: '{{ item.0.name }}'
   with_subelements:
     - "{{ (users_system + users_admin + users_normal) | selectattr('files', 'defined') | list }}"
@@ -16,6 +17,7 @@
     owner: '{{ item.1.owner | default(omit) }}'
     group: '{{ item.1.group | default(omit) }}'
     mode: '{{ item.1.mode | default(omit) }}'
+  become: true
   become_user: '{{ item.0.name }}'
   with_subelements:
     - "{{ (users_system + users_admin + users_normal) | selectattr('files', 'defined') | list }}"
