@@ -1,0 +1,9 @@
+---
+
+- name: Set bashrc for all users
+  template:
+    src: custom.sh
+    dest: /etc/profile.d/custom.sh
+    owner: root
+    group: root
+    mode: '0755'

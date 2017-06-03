@@ -21,6 +21,6 @@
   include: files.yml
   tags: ['users-files']
 
-#- name: Include custom dotfiles
-#  include: dotfiles.yml
-#  tags: ['users-dotfiles']
+- name: Manage user defaults
+  include: defaults.yml
+  tags: ['users-defaults']
