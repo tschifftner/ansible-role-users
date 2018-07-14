@@ -5,6 +5,14 @@
     name: openssh-server
     state: present
 
+- name: Ensure /var/run/sshd exists
+  file:
+    path: /var/run/sshd
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
 - name: Configure SSH (lines)
   lineinfile:
     dest: "{{ users_ssh_config_path }}"
