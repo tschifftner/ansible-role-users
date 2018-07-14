@@ -4,7 +4,7 @@
     name: "{{ users_admin_group }}"
     state: present
   no_log: users_debug == false
-  when: users_admin_group is defined and users_admin_group
+  when: users_admin_group is defined and users_admin_group != ''
 
 - name: Creating groups
   group:
