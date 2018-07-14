@@ -2,26 +2,6 @@
 - hosts: localhost
   remote_user: root
 
-  vars:
-    php5_fpm_pools:
-      - name: 'dummy1'
-        user: 'dummy1'
-        group: 'dummy_group1'
-        prefix: '/home/dummy1/current'
-        tmp_path: '/home/dummy1/tmp'
-        sessions_path: '/home/dummy1/sessions'
-        releases_path: '/home/dummy1/releases'
-        shared_path: '/home/dummy1/shared'
-        logs_path: '/home/dummy1/logs'
-        project_paths:
-          - '/home/dummy1/shared/media'
-          - '/home/dummy1/shared/var'
-        php_admin_value:
-          error_log: 'logs/php_errors.log'
-          max_input_vars: 5000
-          max_execution_time: 300
-          memory_limit: '256M'
-
   pre_tasks:
     - name: Create dummy groups
       group:
@@ -54,6 +34,3 @@
         - dummy1
         - dummy2
         - dummy3
-
-  roles:
-    - tschifftner.php5-fpm

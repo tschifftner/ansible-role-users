@@ -1,126 +1,90 @@
 ---
-sudo: required
-dist: trusty
-
-language: python
-python: "2.7"
+services: docker
 
 env:
-  - SITE=test.yml ANSIBLE_VERSION=latest
-  - SITE=test.yml ANSIBLE_VERSION=2.1.0.0
+#  - distro: centos7
+#  - distro: centos6
+#  - distro: fedora27
+#  - distro: ubuntu1604
+#  - distro: ubuntu1404
+#  - distro: ubuntu1204
 
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y curl
-
-install:
-  # Install Ansible.
-  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install --no-binary ansible ansible; else pip install --no-binary ansible ansible==$ANSIBLE_VERSION; fi
-
-  # Add ansible.cfg to pick up roles path.
-  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
-
-  # Install required roles
-  - ansible-galaxy install -r tests/requirements.yml --ignore-errors --force
-
-  # Install ansible-lint
-  - pip install ansible-lint
+  - distro: debian9
+  - distro: debian8
+  - distro: ubuntu1804
+  - distro: ubuntu1604
+  - distro: ubuntu1404
 
 script:
-  # Check the role/playbook's syntax.
-  - ansible-playbook -i tests/inventory tests/prepare.yml --syntax-check
-  - ansible-playbook -i tests/inventory tests/$SITE --syntax-check
+  # Configure test script so we can run extra tests after playbook is run.
+  - export container_id=$(date +%s)
+  - export cleanup=false
+  - export DOCKER="docker exec --tty ${container_id} env TERM=xterm"
 
-  # Prepare system for testing
-  - ansible-playbook -i tests/inventory tests/prepare.yml --connection=local --become
+  # Download test shim.
+  - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/tschifftner/4078cf2a8429d967d5e100649ff2caa9/raw/
+  - chmod +x ${PWD}/tests/test.sh
 
-  # Test preparations
-  - id -u dummy1
-  - id -u dummy2
-  - id -u dummy3
-  - egrep -q -i "^dummy_group" /etc/group
-  - egrep -q -i "^dummy_group1" /etc/group
-  - egrep -q -i "^dummy_group2" /etc/group
-  - egrep -q -i "^dummy_group3" /etc/group
-  - sudo test -e /home/dummy1/.ssh/authorized_keys
-  - sudo test -e /home/dummy2/.ssh/authorized_keys
-  - sudo test -e /home/dummy3/.ssh/authorized_keys
-  - sudo egrep -i 'key1' /home/dummy1/.ssh/authorized_keys
-  - sudo egrep -i 'key2' /home/dummy1/.ssh/authorized_keys
-
-  # Run the role/playbook with ansible-playbook.
-  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
-
-  # Run the role/playbook again, checking to make sure it's idempotent.
-  - >
-    ansible-playbook -i tests/inventory tests/$SITE --connection=local --become
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
-  # ansible-lint checks for best practice
-  - ansible-lint tests/$SITE
+  # Run tests.
+  - ${PWD}/tests/test.sh
 
   # Check groups
-  - groups travis_admin | grep travis_admin
-  - groups travis_admin | grep travis_group
-  - groups travis_admin2 | grep travis_admin
-  - groups travis_admin2 | grep travis_group
-  - groups travis_normal | grep travis_normal
-  - groups travis_normal | grep travis_group
+  - ${DOCKER} groups travis_admin | grep travis_admin
+  - ${DOCKER} groups travis_admin | grep travis_group
+  - ${DOCKER} groups travis_admin2 | grep travis_admin
+  - ${DOCKER} groups travis_admin2 | grep travis_group
+  - ${DOCKER} groups travis_normal | grep travis_normal
+  - ${DOCKER} groups travis_normal | grep travis_group
 
-  - egrep -q -i "^usergroup1" /etc/group
-  - egrep -q -i "^usergroup2" /etc/group
+  - ${DOCKER} egrep -q -i "^usergroup1" /etc/group
+  - ${DOCKER} egrep -q -i "^usergroup2" /etc/group
 
   # Check removed groups
-  - egrep -i "^dummy_group1" /etc/group | wc -l | grep 0
+  - ${DOCKER} egrep -i "^dummy_group1" /etc/group | wc -l | grep 0
 
   # Check users
-  - id -u travis_admin
-  - id -u travis_admin2
-  - id -u travis_normal
+  - ${DOCKER} id -u travis_admin
+  - ${DOCKER} id -u travis_admin2
+  - ${DOCKER} id -u travis_normal
 
   # Check removed users
   - >
-    id -u dummy1
+    ${DOCKER} id -u dummy1
     && (echo "User is removed: fail" && exit 1)
     || (echo 'User is removed: pass' && exit 0)
   - >
-    id -u dummy2
+    ${DOCKER} id -u dummy2
     && (echo 'User is removed: fail' && exit 1)
     || (echo 'User is removed: pass' && exit 0)
 
   # sudo
-  - sudo test -e /etc/sudoers.d/10-ansible-managed
-  - sudo grep travis_admin /etc/sudoers.d/10-ansible-managed
+  - ${DOCKER} sudo test -e /etc/sudoers.d/10-ansible-managed
+  - ${DOCKER} sudo grep travis_admin /etc/sudoers.d/10-ansible-managed
 
   # ssh
-  - sudo egrep -i 'key1' /home/travis_admin2/.ssh/authorized_keys
-  - sudo egrep -i 'key2' /home/travis_admin2/.ssh/authorized_keys
+  - ${DOCKER} sudo egrep -i 'key1' /home/travis_admin2/.ssh/authorized_keys
+  - ${DOCKER} sudo egrep -i 'key2' /home/travis_admin2/.ssh/authorized_keys
 
   # Ensure ssh is removed from removed users
-  - sudo egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
-  - sudo egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
-  - sudo egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
-  - sudo egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
+  - ${DOCKER} sudo egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
+  - ${DOCKER} sudo egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
+  - ${DOCKER} sudo egrep -i "key1" /home/dummy1/.ssh/authorized_keys | wc -l | grep 0
+  - ${DOCKER} sudo egrep -i "key2" /home/dummy2/.ssh/authorized_keys | wc -l | grep 0
 
   # sshd_config
-  - grep 'PasswordAuthentication no' /etc/ssh/sshd_config
-  - grep 'PermitRootLogin no' /etc/ssh/sshd_config
-  - grep 'Port 2828' /etc/ssh/sshd_config
-
+  - ${DOCKER} grep 'PasswordAuthentication no' /etc/ssh/sshd_config
+  - ${DOCKER} grep 'PermitRootLogin no' /etc/ssh/sshd_config
+  - ${DOCKER} grep 'Port 2828' /etc/ssh/sshd_config
 
 after_failure:
-  # run playbook again to see idempotence failures
-  - ansible-playbook -i tests/inventory tests/$SITE --connection=local --become -vvv
-  - sudo cat /etc/passwd
-  - sudo cat /etc/group
-  - sudo cat /etc/sudoers.d/10-ansible-managed
-  - sudo cat /etc/ssh/sshd_config
-  - sudo cat /home/dummy1/.ssh/authorized_keys
-  - sudo ls -l /home/dummy1/
-  - sudo tail -n150 /var/log/syslog
-  - ansible --version
+  - ${DOCKER} ansible --version
+  - ${DOCKER} cat /etc/passwd
+  - ${DOCKER} cat /etc/group
+  - ${DOCKER} cat /etc/sudoers.d/10-ansible-managed
+  - ${DOCKER} cat /etc/ssh/sshd_config
+  - ${DOCKER} cat tail -n150 /var/log/syslog
+  - ${DOCKER} cat ls -l /home/dummy1/
+  - ${DOCKER} cat /home/dummy1/.ssh/authorized_keys
 
 notifications:
   slack: ambimax:2MlPTX9bY9aPxCPhJGxHKIT6

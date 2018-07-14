@@ -44,4 +44,4 @@
         state: absent
 
   roles:
-    - ansible-role-users
+    - role_under_test
