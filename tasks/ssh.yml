@@ -1,4 +1,10 @@
 ---
+
+- name: Ensure ssh is installed
+  apt:
+    name: openssh-server
+    state: present
+
 - name: Configure SSH (lines)
   lineinfile:
     dest: "{{ users_ssh_config_path }}"
