@@ -13,7 +13,6 @@ env:
   - distro: debian8
   - distro: ubuntu1804
   - distro: ubuntu1604
-  - distro: ubuntu1404
 
 script:
   # Configure test script so we can run extra tests after playbook is run.
