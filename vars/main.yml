@@ -2,4 +2,3 @@
 # Default system users
 users_system:
   - name: 'root'
-_user_files: []
