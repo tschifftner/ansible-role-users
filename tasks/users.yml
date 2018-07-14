@@ -63,6 +63,7 @@
     createhome: "{{ item.createhome | default('yes') }}"
     expires: "{{ item.expires | default(omit) }}"
   #no_log: users_debug == false
+  ignore_errors: true # Some users might be in use
   changed_when: item.update_password is defined and item.update_password != 'always'
   when: (item.name is defined and item.name != 'root' and
         (item.state is not defined or item.state != 'absent') and
