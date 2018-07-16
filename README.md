@@ -1,6 +1,6 @@
 # Ansible Role: Users
 
-[![Build Status](https://travis-ci.org/tschifftner/ansible-role-users.svg)](https://travis-ci.org/tschifftner/ansible-role-users)
+[![Build Status](https://travis-ci.org/tschifftner/ansible-role-users.svg?branch=master)](https://travis-ci.org/tschifftner/ansible-role-users)
 
 Configure users and ssh access on Debian/Ubuntu linux servers.
 
