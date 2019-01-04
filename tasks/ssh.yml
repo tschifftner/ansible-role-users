@@ -35,7 +35,7 @@
 
 - name: Configure ~/.ssh/authorized_keys for users
   authorized_key:
-    key: '{{ item.sshkeys | join("\n") }}'
+    key: "{{ item.sshkeys | join('\n') }}"
     state: 'present'
     user: '{{ item.name }}'
   no_log: users_debug == false
