@@ -38,6 +38,7 @@
     key: "{{ item.sshkeys | join('\n') }}"
     state: 'present'
     user: '{{ item.name }}'
+    exclusive: 'yes'
   no_log: users_debug == false
   with_items: "{{ users_admin + users_normal }}"
   when: ((item.name is defined and item.name and item.name != 'root') and
