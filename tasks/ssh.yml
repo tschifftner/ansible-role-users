@@ -35,15 +35,17 @@
 
 - name: Configure ~/.ssh/authorized_keys for users
   authorized_key:
-    key: '{{ item.sshkeys | join("\n") }}'
-    state: 'present'
-    user: '{{ item.name }}'
+    key: '{{ item.1.key }}'
+    state: "{{ item.1.state | default('absent') }}"
+    user: '{{ item.0.name }}'
   no_log: users_debug == false
-  with_items: "{{ users_admin + users_normal }}"
-  when: ((item.name is defined and item.name and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
-         (item.createhome is undefined or item.createhome) and
-         (item.sshkeys is defined and item.sshkeys))
+  with_subelements:
+    - "{{ (users_admin + users_normal) | selectattr('sshkeys', 'defined') | list }}"
+    - 'sshkeys'
+  when: ((item.0.name is defined and item.0.name and item.0.name != 'root') and
+         (item.0.state is undefined or (item.0.state is defined and item.0.state != 'absent')) and
+         (item.0.createhome is undefined or item.0.createhome) and
+         (item.1.key is defined and item.1.key))
 
 #- name: Remove ~/.ssh/authorized_keys from user account if disabled
 #  file:
