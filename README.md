@@ -31,7 +31,8 @@ users_admin:
     password: '$6$Aqh2Oxtx...DzKWXeHgulX1SJ.'
     update_password: always
     sshkeys:
-      - 'ssh-rsa AAAAB...XJtw== admin1@example.com'
+      - key: 'ssh-rsa AAAAB...XJtw== admin1@example.com'
+      	state: present
 
   - name: admin2
     state: present
@@ -40,7 +41,8 @@ users_admin:
     password: '$6$Aqh2Oxtx...DzKWXeHgulX1SJ.'
     update_password: always
     sshkeys:
-      - 'ssh-rsa AAAAB...XJtw== admin2@example.com'
+      - key: 'ssh-rsa AAAAB...XJtw== admin2@example.com'
+        state: present
 ```
 
 ### Manage normal users
